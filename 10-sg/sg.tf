@@ -62,7 +62,7 @@ resource "aws_security_group_rule" "app_alb_bastion" {
   security_group_id = module.app_alb_sg.sg_id
 }
 
-# To access Bastion instance using public IP from local Laptop
+# To access Bastion instance using public IP from local Laptop using SSH
 resource "aws_security_group_rule" "bastion_public" {
   type              = "ingress"
   from_port         = 22
@@ -128,7 +128,7 @@ resource "aws_security_group_rule" "vpn_1194" {
   security_group_id = module.vpn_sg.sg_id
 }
 
-# Access to Load Balancer from VPN
+# Access to Load Balancer from VPN(VPN security group instances)
 # to allow traffic from VPN to app load balancer
 resource "aws_security_group_rule" "app_alb_vpn" {
   type              = "ingress"
@@ -146,5 +146,15 @@ resource "aws_security_group_rule" "mysql_bastion" {
   to_port           = 3306
   protocol          = "tcp"
   source_security_group_id = module.bastion_sg.sg_id
+  security_group_id = module.mysql_sg.sg_id
+}
+
+# Access to Database from VPN(VPN security group instances)
+resource "aws_security_group_rule" "mysql_vpn" {
+  type              = "ingress"
+  from_port         = 3306
+  to_port           = 3306
+  protocol          = "tcp"
+  source_security_group_id = module.vpn_sg.sg_id
   security_group_id = module.mysql_sg.sg_id
 }
