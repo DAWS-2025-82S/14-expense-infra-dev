@@ -69,7 +69,7 @@ module "db" {
 # Alias route53 record is created for APP Load Balancer with DNS Name
 resource "aws_route53_record" "www-dev" {
   zone_id = var.zone_id
-  name    = "${local.resource_name}.${var.domain_name}"
+  name    = "mysql-${var.environment}.${var.domain_name}"
   type    = "CNAME"
   ttl     = 5
   records = [module.db.db_instance_address]
