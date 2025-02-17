@@ -170,6 +170,18 @@ resource "aws_security_group_rule" "backend_vpn" {
   security_group_id = module.backend_sg.sg_id
 }
 
+
+# Access to Backend http port from VPN(VPN security group instances) using browser
+# Without this we cannot access API from browser
+resource "aws_security_group_rule" "backend_vpn_http" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.vpn_sg.sg_id
+  security_group_id = module.backend_sg.sg_id
+}
+
 # Access to Database from Backend(Backend security group instances)
 resource "aws_security_group_rule" "mysql_backend" {
   type              = "ingress"
@@ -178,4 +190,14 @@ resource "aws_security_group_rule" "mysql_backend" {
   protocol          = "tcp"
   source_security_group_id = module.backend_sg.sg_id
   security_group_id = module.mysql_sg.sg_id
+}
+
+# Access to Backend from Load Balancer
+resource "aws_security_group_rule" "backend_app_alb" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  source_security_group_id = module.app_alb_sg.sg_id
+  security_group_id = module.backend_sg.sg_id
 }
