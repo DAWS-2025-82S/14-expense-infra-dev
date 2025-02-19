@@ -74,6 +74,7 @@ resource "aws_lb_target_group" "backend" {
   port     = 8080
   protocol = "HTTP"
   vpc_id   = local.vpc_id
+  deregistration_delay = 60
 
   health_check {
     healthy_threshold = 2
@@ -108,10 +109,10 @@ resource "aws_launch_template" "backend" {
 resource "aws_autoscaling_group" "backend" {
   name                      = local.resource_name
   max_size                  = 10
-  min_size                  = 2
+  min_size                  = 1
   health_check_grace_period = 60
   health_check_type         = "ELB"
-  desired_capacity          = 2
+  desired_capacity          = 1
   target_group_arns = [aws_lb_target_group.backend.arn]
   launch_template {
     id      = aws_launch_template.backend.id
@@ -133,7 +134,7 @@ resource "aws_autoscaling_group" "backend" {
   }
 
   timeouts {
-    delete = "5m"
+    delete = "10m"
   }
 
   tag {
